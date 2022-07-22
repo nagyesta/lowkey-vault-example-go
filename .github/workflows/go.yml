@@ -1,0 +1,30 @@
+#
+
+name: Go package
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+    - name: Set up Go ${{ matrix.python-version }}
+    - uses: actions/setup-go@84cbf8094393cdc5fe1fe1671ff2647332956b1a # tag=v3.2.1
+    - name: Start Lowkey Vault
+      run: |
+        docker-compose up -d
+        sleep 5
+        docker ps
+    - name: Test with go
+      run: |
+        go test ./src -v
+    - name: Stop container
+      if: always()
+      run: |
+        docker-compose down
