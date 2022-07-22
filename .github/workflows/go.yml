@@ -21,7 +21,7 @@ jobs:
     - name: Start Lowkey Vault
       run: |
         docker-compose up -d
-        sleep 5
+        sleep 10
         docker ps
     - name: Test with go
       run: |
