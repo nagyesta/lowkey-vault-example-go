@@ -1,7 +1,7 @@
 ![LowkeyVault](https://raw.githubusercontent.com/nagyesta/lowkey-vault/main/.github/assets/LowkeyVault-logo-full.png)
 
 [![GitHub license](https://img.shields.io/github/license/nagyesta/lowkey-vault-example-go?color=informational)](https://raw.githubusercontent.com/nagyesta/lowkey-vault-example-go/main/LICENSE)
-[![Go package](https://img.shields.io/github/workflow/status/nagyesta/lowkey-vault-example-go/go%20package?logo=github)](https://github.com/nagyesta/lowkey-vault-example-go/actions/workflows/go.yml)
+[![Go package](https://img.shields.io/github/workflow/status/nagyesta/lowkey-vault-example-go/Go%20package?logo=github)](https://github.com/nagyesta/lowkey-vault-example-go/actions/workflows/go.yml)
 [![Lowkey secure](https://img.shields.io/badge/lowkey-secure-0066CC)](https://github.com/nagyesta/lowkey-vault)
 
 # Lowkey Vault - Example Go
