@@ -14,6 +14,9 @@ a key is used for encrypt/decrypt operations and database connection specific cr
 * [Client](src/lowkey-vault-example.go)
 * [Tests](src/lowkey-vault-example_test.go)
 
+Note: In order to better understand what is needed in general to make similar examples work, please find a generic overview
+[here](https://github.com/nagyesta/lowkey-vault/wiki/Example:-How-can-you-use-Lowkey-Vault-in-your-tests).
+
 ### Usage
 
 1. Start Lowkey Vault 
