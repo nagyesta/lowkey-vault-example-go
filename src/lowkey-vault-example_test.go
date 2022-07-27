@@ -16,7 +16,7 @@ import (
 
 func TestSecret(t *testing.T) {
 	//given
-	httpClient := prepareClient()
+	httpClient := PrepareClient()
 	secretDatabase := "database"
 	secretUsername := "username"
 	secretPassword := "password"
@@ -26,14 +26,14 @@ func TestSecret(t *testing.T) {
 	client := azsecrets.NewClient("https://localhost:8443",
 		&FakeCredential{},
 		&policy.ClientOptions{Transport: &httpClient})
-	setSecret(client, secretDatabase, database)
-	setSecret(client, secretUsername, username)
-	setSecret(client, secretPassword, password)
+	SetSecret(client, secretDatabase, database)
+	SetSecret(client, secretUsername, username)
+	SetSecret(client, secretPassword, password)
 
 	//when
-	gotDatabase := secret(client, secretDatabase)
-	gotUsername := secret(client, secretUsername)
-	gotPassword := secret(client, secretPassword)
+	gotDatabase := Secret(client, secretDatabase)
+	gotUsername := Secret(client, secretUsername)
+	gotPassword := Secret(client, secretPassword)
 
 	//then
 	if gotDatabase != database {
@@ -49,17 +49,17 @@ func TestSecret(t *testing.T) {
 
 func TestKey(t *testing.T) {
 	//given
-	httpClient := prepareClient()
+	httpClient := PrepareClient()
 	secretMessage := "a secret message"
 	keyName := "rsa-key"
 	client := azkeys.NewClient("https://localhost:8443",
 		&FakeCredential{},
 		&policy.ClientOptions{Transport: &httpClient})
-	createKey(client, keyName)
+	CreateKey(client, keyName)
 
 	//when
-	gotEncrypted := encrypt(client, keyName, secretMessage)
-	gotDecrypted := decrypt(client, keyName, gotEncrypted)
+	gotEncrypted := Encrypt(client, keyName, secretMessage)
+	gotDecrypted := Decrypt(client, keyName, gotEncrypted)
 
 	//then
 	if gotDecrypted != secretMessage {
@@ -67,18 +67,18 @@ func TestKey(t *testing.T) {
 	}
 }
 
-func setSecret(client *azsecrets.Client, name string, value string) {
+func SetSecret(client *azsecrets.Client, name string, value string) {
 	_, err := client.SetSecret(context.TODO(), name, azsecrets.SetSecretParameters{Value: &value}, nil)
 	if err != nil {
 		log.Fatalf("failed to create a secret: %v", err)
 	}
 }
 
-func createKey(client *azkeys.Client, name string) {
+func CreateKey(client *azkeys.Client, name string) {
 	rsaKeyParams := azkeys.CreateKeyParameters{
 		Kty:     to.Ptr(azkeys.JSONWebKeyTypeRSA),
 		KeySize: to.Ptr(int32(2048)),
-		KeyOps:  keyOperations(),
+		KeyOps:  KeyOperations(),
 	}
 	_, err := client.CreateKey(context.TODO(), name, rsaKeyParams, nil)
 	if err != nil {
@@ -89,13 +89,13 @@ func createKey(client *azkeys.Client, name string) {
 /*
 	Ignore SSL error caused by the self-signed certificate.
 */
-func prepareClient() http.Client {
+func PrepareClient() http.Client {
 	customTransport := http.DefaultTransport.(*http.Transport).Clone()
 	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	return http.Client{Transport: customTransport}
 }
 
-func keyOperations() []*azkeys.JSONWebKeyOperation {
+func KeyOperations() []*azkeys.JSONWebKeyOperation {
 	return []*azkeys.JSONWebKeyOperation{
 		to.Ptr(azkeys.JSONWebKeyOperationDecrypt),
 		to.Ptr(azkeys.JSONWebKeyOperationEncrypt),
