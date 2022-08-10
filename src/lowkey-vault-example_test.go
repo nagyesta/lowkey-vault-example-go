@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azkeys"
@@ -25,7 +26,15 @@ func TestSecret(t *testing.T) {
 	password := "s3cr3t"
 	client := azsecrets.NewClient("https://localhost:8443",
 		&FakeCredential{},
-		&policy.ClientOptions{Transport: &httpClient})
+		&azsecrets.ClientOptions{ClientOptions: struct {
+			Cloud            cloud.Configuration
+			Logging          policy.LogOptions
+			Retry            policy.RetryOptions
+			Telemetry        policy.TelemetryOptions
+			Transport        policy.Transporter
+			PerCallPolicies  []policy.Policy
+			PerRetryPolicies []policy.Policy
+		}{Transport: &httpClient}})
 	SetSecret(client, secretDatabase, database)
 	SetSecret(client, secretUsername, username)
 	SetSecret(client, secretPassword, password)
