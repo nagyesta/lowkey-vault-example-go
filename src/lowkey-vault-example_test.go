@@ -63,7 +63,15 @@ func TestKey(t *testing.T) {
 	keyName := "rsa-key"
 	client := azkeys.NewClient("https://localhost:8443",
 		&FakeCredential{},
-		&policy.ClientOptions{Transport: &httpClient})
+		&azkeys.ClientOptions{ClientOptions: struct {
+			Cloud            cloud.Configuration
+			Logging          policy.LogOptions
+			Retry            policy.RetryOptions
+			Telemetry        policy.TelemetryOptions
+			Transport        policy.Transporter
+			PerCallPolicies  []policy.Policy
+			PerRetryPolicies []policy.Policy
+		}{Transport: &httpClient}})
 	CreateKey(client, keyName)
 
 	//when
