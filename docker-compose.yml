@@ -3,6 +3,6 @@ version: "2"
 services:
   lowkey-vault:
     container_name: lowkey-vault
-    image: nagyesta/lowkey-vault:1.8.27@sha256:9a759b49a2b9789fa2015ddf02e34c4f048352b9523f8c8d042fa6765fddce83
+    image: nagyesta/lowkey-vault:1.8.35@sha256:3519667a05a9654a8b7642ac3359e719d9ed551af21b9b53cc40a9efa9b307cd
     ports:
       - "8443:8443"
