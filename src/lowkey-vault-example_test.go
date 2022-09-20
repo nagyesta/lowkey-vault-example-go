@@ -34,7 +34,7 @@ func TestSecret(t *testing.T) {
 			Transport        policy.Transporter
 			PerCallPolicies  []policy.Policy
 			PerRetryPolicies []policy.Policy
-		}{Transport: &httpClient}})
+		}{Transport: &httpClient}, DisableChallengeResourceVerification: true})
 	SetSecret(client, secretDatabase, database)
 	SetSecret(client, secretUsername, username)
 	SetSecret(client, secretPassword, password)
@@ -71,7 +71,7 @@ func TestKey(t *testing.T) {
 			Transport        policy.Transporter
 			PerCallPolicies  []policy.Policy
 			PerRetryPolicies []policy.Policy
-		}{Transport: &httpClient}})
+		}{Transport: &httpClient}, DisableChallengeResourceVerification: true})
 	CreateKey(client, keyName)
 
 	//when
