@@ -25,7 +25,7 @@ func TestSecret(t *testing.T) {
 	database := "db"
 	username := "admin"
 	password := "s3cr3t"
-	client := azsecrets.NewClient("https://localhost:8443",
+	client, _ := azsecrets.NewClient("https://localhost:8443",
 		&FakeCredential{},
 		&azsecrets.ClientOptions{ClientOptions: struct {
 			APIVersion       string
