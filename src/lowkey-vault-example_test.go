@@ -64,7 +64,7 @@ func TestKey(t *testing.T) {
 	httpClient := PrepareClient()
 	secretMessage := "a secret message"
 	keyName := "rsa-key"
-	client := azkeys.NewClient("https://localhost:8443",
+	client, _ := azkeys.NewClient("https://localhost:8443",
 		&FakeCredential{},
 		&azkeys.ClientOptions{ClientOptions: struct {
 			APIVersion       string
