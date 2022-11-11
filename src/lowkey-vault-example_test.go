@@ -7,6 +7,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azkeys"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
 	"log"
@@ -27,10 +28,12 @@ func TestSecret(t *testing.T) {
 	client := azsecrets.NewClient("https://localhost:8443",
 		&FakeCredential{},
 		&azsecrets.ClientOptions{ClientOptions: struct {
+			APIVersion       string
 			Cloud            cloud.Configuration
 			Logging          policy.LogOptions
 			Retry            policy.RetryOptions
 			Telemetry        policy.TelemetryOptions
+			TracingProvider  tracing.Provider
 			Transport        policy.Transporter
 			PerCallPolicies  []policy.Policy
 			PerRetryPolicies []policy.Policy
@@ -64,10 +67,12 @@ func TestKey(t *testing.T) {
 	client := azkeys.NewClient("https://localhost:8443",
 		&FakeCredential{},
 		&azkeys.ClientOptions{ClientOptions: struct {
+			APIVersion       string
 			Cloud            cloud.Configuration
 			Logging          policy.LogOptions
 			Retry            policy.RetryOptions
 			Telemetry        policy.TelemetryOptions
+			TracingProvider  tracing.Provider
 			Transport        policy.Transporter
 			PerCallPolicies  []policy.Policy
 			PerRetryPolicies []policy.Policy
