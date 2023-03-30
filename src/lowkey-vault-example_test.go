@@ -2,12 +2,14 @@ package src
 
 import (
 	"context"
+	"crypto/elliptic"
 	"crypto/tls"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azcertificates"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azkeys"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
 	"log"
@@ -43,9 +45,18 @@ func TestSecret(t *testing.T) {
 	SetSecret(client, secretPassword, password)
 
 	//when
-	gotDatabase := Secret(client, secretDatabase)
-	gotUsername := Secret(client, secretUsername)
-	gotPassword := Secret(client, secretPassword)
+	gotDatabase, err := Secret(client, secretDatabase)
+	if err != nil {
+		log.Panicf("failed to get the secret %s", err.Error())
+	}
+	gotUsername, err := Secret(client, secretUsername)
+	if err != nil {
+		log.Panicf("failed to get the secret %s", err.Error())
+	}
+	gotPassword, err := Secret(client, secretPassword)
+	if err != nil {
+		log.Panicf("failed to get the secret %s", err.Error())
+	}
 
 	//then
 	if gotDatabase != database {
@@ -80,12 +91,71 @@ func TestKey(t *testing.T) {
 	CreateKey(client, keyName)
 
 	//when
-	gotEncrypted := Encrypt(client, keyName, secretMessage)
-	gotDecrypted := Decrypt(client, keyName, gotEncrypted)
+	gotEncrypted, err := Encrypt(client, keyName, secretMessage)
+	if err != nil {
+		log.Panicf("failed to encrypt: %v", err)
+	}
+	gotDecrypted, err := Decrypt(client, keyName, gotEncrypted)
+	if err != nil {
+		log.Panicf("failed to decrypt: %v", err)
+	}
 
 	//then
 	if gotDecrypted != secretMessage {
 		t.Errorf("got %q, wanted %q", gotDecrypted, secretMessage)
+	}
+}
+
+func TestCertificate(t *testing.T) {
+	//given
+	httpClient := PrepareClient()
+	certificateName := "certificate"
+	subject := "CN=example.com"
+	secretClient, _ := azsecrets.NewClient("https://localhost:8443",
+		&FakeCredential{},
+		&azsecrets.ClientOptions{ClientOptions: struct {
+			APIVersion       string
+			Cloud            cloud.Configuration
+			Logging          policy.LogOptions
+			Retry            policy.RetryOptions
+			Telemetry        policy.TelemetryOptions
+			TracingProvider  tracing.Provider
+			Transport        policy.Transporter
+			PerCallPolicies  []policy.Policy
+			PerRetryPolicies []policy.Policy
+		}{Transport: &httpClient}, DisableChallengeResourceVerification: true})
+	certificateClient, _ := azcertificates.NewClient("https://localhost:8443",
+		&FakeCredential{},
+		&azcertificates.ClientOptions{ClientOptions: struct {
+			APIVersion       string
+			Cloud            cloud.Configuration
+			Logging          policy.LogOptions
+			Retry            policy.RetryOptions
+			Telemetry        policy.TelemetryOptions
+			TracingProvider  tracing.Provider
+			Transport        policy.Transporter
+			PerCallPolicies  []policy.Policy
+			PerRetryPolicies []policy.Policy
+		}{Transport: &httpClient}, DisableChallengeResourceVerification: true})
+	CreateCertificate(certificateClient, certificateName, subject)
+
+	//when
+	gotCertificate, err := Certificate(secretClient, certificateName)
+	if err != nil {
+		log.Panicf("failed to get certificate: %v", err)
+	}
+	gotKey, err := PrivateKey(secretClient, certificateName)
+	if err != nil {
+		log.Panicf("failed to get private key: %v", err)
+	}
+
+	//then
+	if gotCertificate.Subject.String() != subject {
+		t.Errorf("got %q, wanted %q", gotCertificate.Subject.CommonName, subject)
+	}
+	//check key curve of the obtained key
+	if gotKey.Curve != elliptic.P256() {
+		t.Errorf("got %q, wanted %q", gotKey.Curve, elliptic.P256())
 	}
 }
 
@@ -105,6 +175,34 @@ func CreateKey(client *azkeys.Client, name string) {
 	_, err := client.CreateKey(context.TODO(), name, rsaKeyParams, nil)
 	if err != nil {
 		log.Fatalf("failed to create a key: %v", err)
+	}
+}
+
+func CreateCertificate(client *azcertificates.Client, name string, subject string) {
+	_, err := client.CreateCertificate(context.TODO(), name, azcertificates.CreateCertificateParameters{
+		CertificatePolicy: &azcertificates.CertificatePolicy{
+			IssuerParameters: &azcertificates.IssuerParameters{
+				Name: to.Ptr("Self"),
+			},
+			KeyProperties: &azcertificates.KeyProperties{
+				Curve:    to.Ptr(azcertificates.JSONWebKeyCurveNameP256),
+				KeyType:  to.Ptr(azcertificates.JSONWebKeyTypeEC),
+				ReuseKey: to.Ptr(true),
+			},
+			SecretProperties: &azcertificates.SecretProperties{
+				ContentType: to.Ptr("application/x-pkcs12"),
+			},
+			X509CertificateProperties: &azcertificates.X509CertificateProperties{
+				Subject: &subject,
+				SubjectAlternativeNames: &azcertificates.SubjectAlternativeNames{
+					DNSNames: []*string{to.Ptr("localhost")},
+				},
+				ValidityInMonths: to.Ptr(int32(12)),
+			},
+		},
+	}, nil)
+	if err != nil {
+		log.Fatalf("failed to create a certificate: %v", err)
 	}
 }
 
