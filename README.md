@@ -7,7 +7,8 @@
 # Lowkey Vault - Example Go
 
 This is an example for [Lowkey Vault](https://github.com/nagyesta/lowkey-vault). It demonstrates a basic scenario where
-a key is used for encrypt/decrypt operations and database connection specific credentials.
+a key is used for encrypt/decrypt operations and database connection specific credentials as well as getting a PKCS12 
+store with a certificate and matching private key inside.
 
 ### Points of interest
 
@@ -27,5 +28,5 @@ Note: In order to better understand what is needed in general to make similar ex
 
 ### Note
 
-This is my very first Go project after using it for 2-3 hours, please have mercy when
-commenting on code quality!
+I am not a professional Go developer. Please do not judge me by the code quality. I am open to any suggestions and
+improvements.
