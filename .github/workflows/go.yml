@@ -23,7 +23,11 @@ jobs:
         docker-compose up -d
         sleep 5
         docker ps
+        if [ $(docker ps | grep nagyesta | wc -l) -ne 2 ]; then echo "ERROR: Some containers are not running"; exit 1; fi
     - name: Test with go
+      env:
+        IDENTITY_ENDPOINT: http://localhost:8080/metadata/identity/oauth2/token
+        IDENTITY_HEADER: header
       run: |
         go test ./src -v
     - name: Stop container
