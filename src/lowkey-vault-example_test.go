@@ -9,9 +9,9 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
-	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azcertificates"
-	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azkeys"
-	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
+	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates"
+	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys"
+	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 	"log"
 	"net/http"
 	"testing"
@@ -168,7 +168,7 @@ func SetSecret(client *azsecrets.Client, name string, value string) {
 
 func CreateKey(client *azkeys.Client, name string) {
 	rsaKeyParams := azkeys.CreateKeyParameters{
-		Kty:     to.Ptr(azkeys.JSONWebKeyTypeRSA),
+		Kty:     to.Ptr(azkeys.KeyTypeRSA),
 		KeySize: to.Ptr(int32(2048)),
 		KeyOps:  KeyOperations(),
 	}
@@ -185,8 +185,8 @@ func CreateCertificate(client *azcertificates.Client, name string, subject strin
 				Name: to.Ptr("Self"),
 			},
 			KeyProperties: &azcertificates.KeyProperties{
-				Curve:    to.Ptr(azcertificates.JSONWebKeyCurveNameP256),
-				KeyType:  to.Ptr(azcertificates.JSONWebKeyTypeEC),
+				Curve:    to.Ptr(azcertificates.CurveNameP256),
+				KeyType:  to.Ptr(azcertificates.KeyTypeEC),
 				ReuseKey: to.Ptr(true),
 			},
 			SecretProperties: &azcertificates.SecretProperties{
@@ -215,12 +215,12 @@ func PrepareClient() http.Client {
 	return http.Client{Transport: customTransport}
 }
 
-func KeyOperations() []*azkeys.JSONWebKeyOperation {
-	return []*azkeys.JSONWebKeyOperation{
-		to.Ptr(azkeys.JSONWebKeyOperationDecrypt),
-		to.Ptr(azkeys.JSONWebKeyOperationEncrypt),
-		to.Ptr(azkeys.JSONWebKeyOperationUnwrapKey),
-		to.Ptr(azkeys.JSONWebKeyOperationWrapKey),
+func KeyOperations() []*azkeys.KeyOperation {
+	return []*azkeys.KeyOperation{
+		to.Ptr(azkeys.KeyOperationDecrypt),
+		to.Ptr(azkeys.KeyOperationEncrypt),
+		to.Ptr(azkeys.KeyOperationUnwrapKey),
+		to.Ptr(azkeys.KeyOperationWrapKey),
 	}
 }
 
