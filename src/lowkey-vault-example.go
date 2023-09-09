@@ -7,10 +7,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
-	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azkeys"
+	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys"
+	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 	"software.sslmate.com/src/go-pkcs12"
-
-	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
 )
 
 // Secret - Simulated production code that can fetch the value of a given secret using the provided secret client.
@@ -36,9 +35,9 @@ func Secret(client *azsecrets.Client, name string) (string, error) {
 // message - The clear text message we want to encrypt.
 func Encrypt(client *azkeys.Client, name string, message string) ([]byte, error) {
 	version, _ := GetLatestVersionOfKey(client, name)
-	parameters := azkeys.KeyOperationsParameters{
+	parameters := azkeys.KeyOperationParameters{
 		Value:     []byte(message),
-		Algorithm: to.Ptr(azkeys.JSONWebKeyEncryptionAlgorithmRSAOAEP256)}
+		Algorithm: to.Ptr(azkeys.EncryptionAlgorithmRSAOAEP256)}
 	resp, err := client.Encrypt(context.TODO(), name, version, parameters, nil)
 	if err != nil {
 		return nil, errors.New("failed to decrypt using key: " + err.Error())
@@ -55,9 +54,9 @@ func Encrypt(client *azkeys.Client, name string, message string) ([]byte, error)
 // encrypted - The encrypted message we want to decrypt.
 func Decrypt(client *azkeys.Client, name string, encrypted []byte) (string, error) {
 	version, _ := GetLatestVersionOfKey(client, name)
-	parameters := azkeys.KeyOperationsParameters{
+	parameters := azkeys.KeyOperationParameters{
 		Value:     encrypted,
-		Algorithm: to.Ptr(azkeys.JSONWebKeyEncryptionAlgorithmRSAOAEP256)}
+		Algorithm: to.Ptr(azkeys.EncryptionAlgorithmRSAOAEP256)}
 	resp, err := client.Decrypt(context.TODO(), name, version, parameters, nil)
 	if err != nil {
 		return "", errors.New("failed to decrypt using key: " + err.Error())
