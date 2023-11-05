@@ -8,7 +8,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys v1.0.1
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets v1.0.1
-	software.sslmate.com/src/go-pkcs12 v0.3.0
+	software.sslmate.com/src/go-pkcs12 v0.4.0
 )
 
 require (
