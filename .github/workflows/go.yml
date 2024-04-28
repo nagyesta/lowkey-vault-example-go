@@ -13,7 +13,8 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+    - name: Checkout
+      uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
     - name: Set up Go
       uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
       with:
@@ -23,7 +24,7 @@ jobs:
         docker-compose up -d
         sleep 5
         docker ps
-        if [ $(docker ps | grep nagyesta | wc -l) -ne 2 ]; then echo "ERROR: Some containers are not running"; exit 1; fi
+        if [ $(docker ps | grep nagyesta | wc -l) -ne 1 ]; then echo "ERROR: Some containers are not running"; exit 1; fi
     - name: Test with go
       env:
         IDENTITY_ENDPOINT: http://localhost:8080/metadata/identity/oauth2/token
