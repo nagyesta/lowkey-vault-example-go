@@ -17,7 +17,8 @@ store with a certificate and matching private key inside.
   * [Using FakeCredential](src/lowkey-vault-example_test.go)
   * [Using Managed Identity with DefaultAzureCredential](src/lowkey-vault-example_mi_test.go) (requires Assumed Identity to run)
 
-Note: In order to better understand what is needed in general to make similar examples work, please find a generic overview
+> [!NOTE]
+> In order to better understand what is needed in general to make similar examples work, please find a generic overview
 [here](https://github.com/nagyesta/lowkey-vault/wiki/Example:-How-can-you-use-Lowkey-Vault-in-your-tests).
 
 ### Usage
@@ -30,7 +31,5 @@ Note: In order to better understand what is needed in general to make similar ex
    2. Set ```IDENTITY_HEADER``` environment variable to anything (just needs to exist) e.g., `header`
 3. Run the tests
 
-### Note
-
-I am not a professional Go developer. Please do not judge me by the code quality. I am open to any suggestions and
-improvements.
+> [!TIP]
+> Since v2.4.2, Lowkey Vault is providing the same token endpoint on the `8080` port by default. Therefore, you don't need to start another container.
