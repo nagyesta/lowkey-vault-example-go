@@ -21,7 +21,7 @@ jobs:
         go-version: '1.18.2'
     - name: Start Lowkey Vault
       run: |
-        docker-compose up -d
+        docker compose up -d
         sleep 5
         docker ps
         if [ $(docker ps | grep nagyesta | wc -l) -ne 1 ]; then echo "ERROR: Some containers are not running"; exit 1; fi
@@ -34,4 +34,4 @@ jobs:
     - name: Stop container
       if: always()
       run: |
-        docker-compose down
+        docker compose down
